@@ -28,6 +28,12 @@ export default function PublicPage() {
       </header>
 
       <main>
+        <img
+          src="https://cataas.com/cat"
+          alt="Gato de teste"
+          style={{ maxWidth: '100%', borderRadius: '8px', marginBottom: '16px' }}
+        />
+
         {tab === 'cadastro' &&
           (confirmado ? (
             <CadastroConfirmado onVerLojas={() => setTab('lojas')} />
