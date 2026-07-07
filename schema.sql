@@ -18,18 +18,28 @@ create table if not exists produtos (
   id uuid primary key default gen_random_uuid(),
   loja_id uuid not null references lojas(id) on delete cascade,
   nome text not null,
+  plataforma text not null default 'Outra', -- ex: TikTok, Magalu, Shopee, Shein ou texto livre
   status text not null default 'pendente' check (status in ('pendente','devolvido')),
   created_at timestamptz not null default now()
 );
 
--- ---------- TABELA: clientes (cadastros feitos pelo público via QR code) ----------
--- loja_id fica nulo se a loja for excluída (o cliente NUNCA some, conforme exigido)
+-- ---------- TABELA: clientes (identidade da pessoa - nome + telefone, sem repetição) ----------
+-- telefone identifica a pessoa: se ela já tiver cadastro, um novo cadastro (em outra
+-- loja) é vinculado à mesma pessoa em vez de duplicar nome/telefone.
 create table if not exists clientes (
   id uuid primary key default gen_random_uuid(),
+  nome text not null,
+  telefone text not null unique,
+  created_at timestamptz not null default now()
+);
+
+-- ---------- TABELA: cadastros (cada devolução registrada por um cliente em uma loja) ----------
+-- loja_id fica nulo se a loja for excluída (o cadastro NUNCA some, conforme exigido)
+create table if not exists cadastros (
+  id uuid primary key default gen_random_uuid(),
+  cliente_id uuid not null references clientes(id) on delete cascade,
   loja_id uuid references lojas(id) on delete set null,
   loja_nome text not null, -- guardado separado, garante que o nome da loja não se perde mesmo se a loja for excluída
-  nome text not null,
-  telefone text not null,
   created_at timestamptz not null default now()
 );
 
@@ -43,15 +53,19 @@ create table if not exists clientes (
 alter table lojas enable row level security;
 alter table produtos enable row level security;
 alter table clientes enable row level security;
+alter table cadastros enable row level security;
 
--- Qualquer pessoa pode LER as 3 tabelas (necessário pra tela pública funcionar)
+-- Qualquer pessoa pode LER as 4 tabelas (necessário pra tela pública funcionar)
 create policy "select_publico_lojas" on lojas for select using (true);
 create policy "select_publico_produtos" on produtos for select using (true);
 create policy "select_publico_clientes" on clientes for select using (true);
+create policy "select_publico_cadastros" on cadastros for select using (true);
 
--- Qualquer pessoa pode CRIAR loja (cliente pode cadastrar loja nova) e cadastro de cliente
+-- Qualquer pessoa pode CRIAR loja (cliente pode cadastrar loja nova), se identificar
+-- como cliente e registrar um cadastro de devolução
 create policy "insert_publico_lojas" on lojas for insert with check (true);
 create policy "insert_publico_clientes" on clientes for insert with check (true);
+create policy "insert_publico_cadastros" on cadastros for insert with check (true);
 
 -- Produtos, atualização e exclusão: liberado para o app funcionar (o painel admin é protegido
 -- só por PIN na interface, não por autenticação real do Supabase — ver aviso no README)
@@ -60,6 +74,7 @@ create policy "update_publico_produtos" on produtos for update using (true);
 create policy "delete_publico_produtos" on produtos for delete using (true);
 create policy "delete_publico_lojas" on lojas for delete using (true);
 create policy "delete_publico_clientes" on clientes for delete using (true);
+create policy "delete_publico_cadastros" on cadastros for delete using (true);
 
 -- ============================================================
 -- REALTIME (opcional, mas recomendado)
@@ -69,3 +84,4 @@ create policy "delete_publico_clientes" on clientes for delete using (true);
 alter publication supabase_realtime add table lojas;
 alter publication supabase_realtime add table produtos;
 alter publication supabase_realtime add table clientes;
+alter publication supabase_realtime add table cadastros;

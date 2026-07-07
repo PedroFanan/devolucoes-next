@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAppData } from '@/lib/useAppData';
-import { registrarCliente } from '@/lib/api';
+import { registrarCadastro } from '@/lib/api';
 import CadastroForm from '@/components/CadastroForm';
 import CadastroConfirmado from '@/components/CadastroConfirmado';
 import ListaLojas from '@/components/ListaLojas';
@@ -22,6 +22,7 @@ export default function PublicPage() {
       <header className="topbar">
         <div className="brand">
           Balcão<span>.</span>Devoluções
+          <div className="brand-address">Ponto de coleta: Av. Brasil, 2971</div>
         </div>
         <div className="tag">Loja</div>
       </header>
@@ -35,7 +36,7 @@ export default function PublicPage() {
               lojas={lojas}
               onSubmit={async ({ loja, nome, telefone }) => {
                 try {
-                  await registrarCliente({ lojaNome: loja, nome, telefone, lojasExistentes: lojas });
+                  await registrarCadastro({ lojaNome: loja, nome, telefone, lojasExistentes: lojas });
                   setConfirmado(true);
                 } catch (e) {
                   showToast('Erro ao enviar cadastro: ' + e.message);
@@ -52,18 +53,21 @@ export default function PublicPage() {
       </main>
 
       <footer className="tabbar">
-        <button
-          className={tab === 'cadastro' ? 'active' : ''}
-          onClick={() => {
-            setTab('cadastro');
-            setConfirmado(false);
-          }}
-        >
-          Cadastro
-        </button>
-        <button className={tab === 'lojas' ? 'active' : ''} onClick={() => setTab('lojas')}>
-          Lojas p/ devolução
-        </button>
+        <div className="tabbar-address">Av. Brasil, 2971</div>
+        <div className="tabbar-buttons">
+          <button
+            className={tab === 'cadastro' ? 'active' : ''}
+            onClick={() => {
+              setTab('cadastro');
+              setConfirmado(false);
+            }}
+          >
+            Cadastro
+          </button>
+          <button className={tab === 'lojas' ? 'active' : ''} onClick={() => setTab('lojas')}>
+            Lojas p/ devolução
+          </button>
+        </div>
       </footer>
 
       <Toast message={toast} />

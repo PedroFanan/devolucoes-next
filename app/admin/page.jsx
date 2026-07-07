@@ -14,7 +14,7 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [checked, setChecked] = useState(false);
   const [tab, setTab] = useState('lojas');
-  const { lojas, clientes, loading, reload } = useAppData();
+  const { lojas, clientes, loading, reload } = useAppData({ withClientes: true });
   const { toast, showToast } = useToast();
 
   useEffect(() => {
@@ -45,6 +45,7 @@ export default function AdminPage() {
       <header className="topbar">
         <div className="brand">
           Balcão<span>.</span>Devoluções
+          <div className="brand-address">Ponto de coleta: Av. Brasil, 2971</div>
         </div>
         <div className="tag">Admin</div>
       </header>
@@ -64,15 +65,17 @@ export default function AdminPage() {
       </main>
 
       <footer className="tabbar">
-        <button className={tab === 'lojas' ? 'active' : ''} onClick={() => setTab('lojas')}>
-          Lojas / Produtos
-        </button>
-        <button className={tab === 'clientes' ? 'active' : ''} onClick={() => setTab('clientes')}>
-          Cadastros
-        </button>
-        <button className={tab === 'qr' ? 'active' : ''} onClick={() => setTab('qr')}>
-          QR Code
-        </button>
+        <div className="tabbar-buttons">
+          <button className={tab === 'lojas' ? 'active' : ''} onClick={() => setTab('lojas')}>
+            Lojas / Produtos
+          </button>
+          <button className={tab === 'clientes' ? 'active' : ''} onClick={() => setTab('clientes')}>
+            Cadastros
+          </button>
+          <button className={tab === 'qr' ? 'active' : ''} onClick={() => setTab('qr')}>
+            QR Code
+          </button>
+        </div>
       </footer>
 
       <Toast message={toast} />

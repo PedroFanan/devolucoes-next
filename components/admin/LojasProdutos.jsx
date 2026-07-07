@@ -9,9 +9,13 @@ import {
   excluirLoja,
 } from '@/lib/api';
 
+const PLATAFORMAS = ['TikTok', 'Magalu', 'Shopee', 'Shein', 'Outra'];
+
 export default function LojasProdutos({ lojas, onChanged, onError, onSuccess }) {
   const [novaLoja, setNovaLoja] = useState('');
   const [novoProduto, setNovoProduto] = useState({}); // { [lojaId]: texto digitado }
+  const [plataforma, setPlataforma] = useState({}); // { [lojaId]: 'TikTok' | ... | 'Outra' }
+  const [plataformaOutra, setPlataformaOutra] = useState({}); // { [lojaId]: texto digitado }
 
   async function handleAddLoja() {
     if (!novaLoja.trim()) return;
@@ -28,9 +32,15 @@ export default function LojasProdutos({ lojas, onChanged, onError, onSuccess }) 
   async function handleAddProduto(lojaId) {
     const nome = (novoProduto[lojaId] || '').trim();
     if (!nome) return;
+    const plataformaSelecionada = plataforma[lojaId] || PLATAFORMAS[0];
+    const plataformaFinal =
+      plataformaSelecionada === 'Outra'
+        ? (plataformaOutra[lojaId] || '').trim() || 'Outra'
+        : plataformaSelecionada;
     try {
-      await adicionarProduto(lojaId, nome);
+      await adicionarProduto(lojaId, nome, plataformaFinal);
       setNovoProduto((prev) => ({ ...prev, [lojaId]: '' }));
+      setPlataformaOutra((prev) => ({ ...prev, [lojaId]: '' }));
       onSuccess('Produto adicionado.');
       onChanged();
     } catch (e) {
@@ -128,6 +138,7 @@ export default function LojasProdutos({ lojas, onChanged, onError, onSuccess }) 
                 }
               >
                 {p.nome}
+                {p.plataforma && <span className="plataforma-badge">{p.plataforma}</span>}
               </span>
               <div className="p-actions">
                 {p.status === 'pendente' && (
@@ -149,6 +160,24 @@ export default function LojasProdutos({ lojas, onChanged, onError, onSuccess }) 
               value={novoProduto[l.id] || ''}
               onChange={(e) => setNovoProduto((prev) => ({ ...prev, [l.id]: e.target.value }))}
             />
+            <select
+              value={plataforma[l.id] || PLATAFORMAS[0]}
+              onChange={(e) => setPlataforma((prev) => ({ ...prev, [l.id]: e.target.value }))}
+            >
+              {PLATAFORMAS.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+            {(plataforma[l.id] || PLATAFORMAS[0]) === 'Outra' && (
+              <input
+                type="text"
+                placeholder="Qual plataforma?"
+                value={plataformaOutra[l.id] || ''}
+                onChange={(e) => setPlataformaOutra((prev) => ({ ...prev, [l.id]: e.target.value }))}
+              />
+            )}
             <button className="btn small" onClick={() => handleAddProduto(l.id)}>
               Adicionar
             </button>

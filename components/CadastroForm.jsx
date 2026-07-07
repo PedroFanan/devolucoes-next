@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function CadastroForm({ lojas, onSubmit }) {
   const [loja, setLoja] = useState('');
@@ -8,11 +8,19 @@ export default function CadastroForm({ lojas, onSubmit }) {
   const [telefone, setTelefone] = useState('');
   const [enviando, setEnviando] = useState(false);
 
+  useEffect(() => {
+    setNome(localStorage.getItem('meuNome') || '');
+    setTelefone(localStorage.getItem('meuTelefone') || '');
+  }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!loja.trim() || !nome.trim() || !telefone.trim()) return;
     setEnviando(true);
     await onSubmit({ loja: loja.trim(), nome: nome.trim(), telefone: telefone.trim() });
+    localStorage.setItem('meuNome', nome.trim());
+    localStorage.setItem('meuTelefone', telefone.trim());
+    setLoja('');
     setEnviando(false);
   }
 

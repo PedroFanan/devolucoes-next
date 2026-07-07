@@ -27,6 +27,7 @@ export default function QrCodePanel() {
       <div className="qr-box">
         {qrSrc && <img src={qrSrc} width={220} height={220} alt="QR code de acesso ao cadastro" />}
         <p>{url}</p>
+        <p className="qr-address">Ponto de coleta: Av. Brasil, 2971</p>
       </div>
     </>
   );

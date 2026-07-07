@@ -1,23 +1,23 @@
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
 
   :root{
-    --paper:#EFE9DF;
-    --paper-2:#E4DCCB;
-    --ink:#241F1C;
-    --ink-soft:#4A433C;
-    --line:#A69C8D;
-    --stamp:#B23A2E;
-    --stamp-dark:#8C2C22;
-    --teal:#3B6E64;
-    --teal-dark:#2C534B;
-    --white:#FBF9F4;
+    --paper:#F5F5F5;
+    --paper-2:#FFEDE6;
+    --ink:#222222;
+    --ink-soft:#767676;
+    --line:#E5D6CE;
+    --stamp:#EE4D2D;
+    --stamp-dark:#D23F1D;
+    --teal:#1BAA6D;
+    --teal-dark:#128954;
+    --white:#FFFFFF;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:var(--paper);
     background-image:
-      radial-gradient(circle at 1px 1px, rgba(36,31,28,0.06) 1px, transparent 0);
+      radial-gradient(circle at 1px 1px, rgba(34,34,34,0.06) 1px, transparent 0);
     background-size: 18px 18px;
     color:var(--ink);
     font-family:'Inter',sans-serif;
@@ -49,6 +49,15 @@
     text-transform:uppercase;
   }
   header.topbar .brand span{color:var(--stamp);}
+  header.topbar .brand-address{
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size:10.5px;
+    letter-spacing:0;
+    text-transform:none;
+    color:var(--ink-soft);
+    margin-top:3px;
+  }
   header.topbar .tag{
     font-size:10px;
     letter-spacing:0.12em;
@@ -211,6 +220,19 @@
     background:var(--white);
     border-top:2px dashed var(--line);
     display:flex;
+    flex-direction:column;
+  }
+  footer.tabbar .tabbar-address{
+    text-align:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:6px 6px 0;
+  }
+  footer.tabbar .tabbar-buttons{
+    display:flex;
   }
   footer.tabbar button{
     flex:1;
@@ -272,6 +294,20 @@
     font-size:13.5px;
   }
   .produto-row .p-name{flex:1;}
+  .plataforma-badge{
+    display:inline-block;
+    margin-left:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--stamp-dark);
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:2px 8px;
+    vertical-align:middle;
+  }
   .produto-row .p-actions{display:flex; gap:6px;}
   .icon-btn{
     border:1px solid var(--line);
@@ -285,19 +321,26 @@
   .icon-btn.done{border-color:var(--teal-dark); color:var(--teal-dark);}
   .icon-btn.del{border-color:var(--stamp-dark); color:var(--stamp-dark);}
 
-  .add-inline{display:flex; gap:8px; margin-top:10px;}
-  .add-inline input{flex:1; font-size:14px; padding:9px 10px; border:1px solid var(--line); border-radius:3px;}
+  .add-inline{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+  .add-inline input{flex:1; min-width:120px; font-size:14px; padding:9px 10px; border:1px solid var(--line); border-radius:3px;}
+  .add-inline select{font-size:13px; padding:9px 8px; border:1px solid var(--line); border-radius:3px; background:var(--white); color:var(--ink);}
 
-  .cliente-row{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:12px 14px;
+  .cliente-card{
     background:var(--white);
     border:1px solid var(--line);
     border-radius:4px;
-    margin-bottom:8px;
+    padding:12px 14px;
+    margin-bottom:10px;
   }
-  .cliente-row .c-info .c-name{font-weight:600; font-size:14px;}
-  .cliente-row .c-info .c-sub{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .cliente-card .c-info .c-name{font-weight:600; font-size:14px;}
+  .cliente-card .c-info .c-sub{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .cliente-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:9px 0 0 12px;
+    margin-top:9px;
+    border-top:1px dashed var(--line);
+  }
+  .cliente-row .c-info .c-sub{font-size:13px; color:var(--ink); margin-top:0;}
 
   .pin-wrap{
     max-width:280px; margin:60px auto 0; text-align:center;
@@ -318,6 +361,7 @@
   }
   .qr-box img{border:1px solid var(--line); border-radius:4px;}
   .qr-box p{font-size:12px; color:var(--ink-soft); margin-top:12px; word-break:break-all;}
+  .qr-box p.qr-address{font-weight:600; color:var(--ink); word-break:normal;}
 
   .toast{
     position:fixed; bottom:80px; left:50%; transform:translateX(-50%);
