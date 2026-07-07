@@ -6,6 +6,7 @@ import PinGate from '@/components/admin/PinGate';
 import LojasProdutos from '@/components/admin/LojasProdutos';
 import ClientesList from '@/components/admin/ClientesList';
 import QrCodePanel from '@/components/admin/QrCodePanel';
+import BiparPanel from '@/components/admin/BiparPanel';
 import Toast, { useToast } from '@/components/Toast';
 
 const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN || '2026';
@@ -57,6 +58,9 @@ export default function AdminPage() {
         {tab === 'clientes' && (
           <ClientesList clientes={clientes} onChanged={reload} onError={showToast} onSuccess={showToast} />
         )}
+        {tab === 'bipar' && (
+          <BiparPanel lojas={lojas} onChanged={reload} onError={showToast} onSuccess={showToast} />
+        )}
         {tab === 'qr' && <QrCodePanel />}
 
         <span className="admin-link" onClick={handleLogout}>
@@ -71,6 +75,9 @@ export default function AdminPage() {
           </button>
           <button className={tab === 'clientes' ? 'active' : ''} onClick={() => setTab('clientes')}>
             Cadastros
+          </button>
+          <button className={tab === 'bipar' ? 'active' : ''} onClick={() => setTab('bipar')}>
+            Bipar
           </button>
           <button className={tab === 'qr' ? 'active' : ''} onClick={() => setTab('qr')}>
             QR Code

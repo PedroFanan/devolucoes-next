@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import LojaSelector from './LojaSelector';
 
 export default function CadastroForm({ lojas, onSubmit }) {
   const [loja, setLoja] = useState('');
@@ -35,20 +36,7 @@ export default function CadastroForm({ lojas, onSubmit }) {
         <form className="form" onSubmit={handleSubmit}>
           <div className="field">
             <label htmlFor="f-loja">Loja</label>
-            <input
-              id="f-loja"
-              list="lojaOptionsList"
-              autoComplete="off"
-              required
-              value={loja}
-              onChange={(e) => setLoja(e.target.value)}
-              placeholder="Digite ou selecione a loja"
-            />
-            <datalist id="lojaOptionsList">
-              {lojas.map((l) => (
-                <option key={l.id} value={l.nome} />
-              ))}
-            </datalist>
+            <LojaSelector lojas={lojas} value={loja} onChange={setLoja} />
           </div>
           <div className="field">
             <label htmlFor="f-nome">Nome completo</label>

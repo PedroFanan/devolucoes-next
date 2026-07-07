@@ -352,6 +352,36 @@
   }
   .pin-error{color:var(--stamp); font-size:12.5px; margin-bottom:10px; min-height:16px;}
 
+  .combo{position:relative;}
+  .combo-list{
+    position:absolute;
+    left:0; right:0; top:calc(100% + 6px);
+    background:var(--white);
+    border:1.5px solid var(--ink);
+    border-radius:4px;
+    max-height:220px;
+    overflow-y:auto;
+    z-index:20;
+    box-shadow:0 6px 18px rgba(0,0,0,0.12);
+  }
+  .combo-item{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    border-bottom:1px solid var(--paper-2);
+    padding:12px 14px;
+    font-size:15px;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .combo-item:last-child{border-bottom:none;}
+  .combo-item:hover, .combo-item:active{background:var(--paper-2);}
+  .combo-item.combo-new{color:var(--teal-dark); font-weight:600;}
+  .combo-empty{padding:12px 14px; font-size:13px; color:var(--ink-soft);}
+
   .qr-box{
     text-align:center;
     background:var(--white);

@@ -20,8 +20,16 @@ create table if not exists produtos (
   nome text not null,
   plataforma text not null default 'Outra', -- ex: TikTok, Magalu, Shopee, Shein ou texto livre
   status text not null default 'pendente' check (status in ('pendente','devolvido')),
+  codigo text, -- código do QR/código de barras da transportadora, lido na tela "Bipar" do admin
   created_at timestamptz not null default now()
 );
+
+-- Se a tabela já existia antes deste campo ser adicionado, este comando garante que ele
+-- seja criado sem apagar os dados (idempotente: pode rodar de novo sem erro).
+alter table produtos add column if not exists codigo text;
+
+-- Código único por pacote (permite vários produtos sem código, pois NULL nunca colide).
+create unique index if not exists produtos_codigo_key on produtos (codigo) where codigo is not null;
 
 -- ---------- TABELA: clientes (identidade da pessoa - nome + telefone, sem repetição) ----------
 -- telefone identifica a pessoa: se ela já tiver cadastro, um novo cadastro (em outra
