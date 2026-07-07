@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LojaSelector from './LojaSelector';
 
 export default function CadastroForm({ lojas, onSubmit }) {
@@ -8,11 +8,24 @@ export default function CadastroForm({ lojas, onSubmit }) {
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const nomeRef = useRef(null);
+  const telefoneRef = useRef(null);
+  const submitRef = useRef(null);
 
   useEffect(() => {
     setNome(localStorage.getItem('meuNome') || '');
     setTelefone(localStorage.getItem('meuTelefone') || '');
   }, []);
+
+  function focarProximoCampo() {
+    if (!nome.trim()) {
+      nomeRef.current?.focus();
+    } else if (!telefone.trim()) {
+      telefoneRef.current?.focus();
+    } else {
+      submitRef.current?.focus();
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -36,12 +49,13 @@ export default function CadastroForm({ lojas, onSubmit }) {
         <form className="form" onSubmit={handleSubmit}>
           <div className="field">
             <label htmlFor="f-loja">Loja</label>
-            <LojaSelector lojas={lojas} value={loja} onChange={setLoja} />
+            <LojaSelector lojas={lojas} value={loja} onChange={setLoja} onSelected={focarProximoCampo} />
           </div>
           <div className="field">
             <label htmlFor="f-nome">Nome completo</label>
             <input
               id="f-nome"
+              ref={nomeRef}
               type="text"
               required
               value={nome}
@@ -53,6 +67,7 @@ export default function CadastroForm({ lojas, onSubmit }) {
             <label htmlFor="f-tel">Telefone</label>
             <input
               id="f-tel"
+              ref={telefoneRef}
               type="tel"
               required
               value={telefone}
@@ -60,7 +75,7 @@ export default function CadastroForm({ lojas, onSubmit }) {
               placeholder="(00) 00000-0000"
             />
           </div>
-          <button type="submit" className="btn block" disabled={enviando}>
+          <button type="submit" className="btn block" ref={submitRef} disabled={enviando}>
             {enviando ? 'Enviando...' : 'Confirmar cadastro'}
           </button>
         </form>

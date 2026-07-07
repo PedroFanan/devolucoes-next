@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-export default function LojaSelector({ lojas, value, onChange }) {
+export default function LojaSelector({ lojas, value, onChange, onSelected }) {
   const [aberto, setAberto] = useState(false);
   const wrapperRef = useRef(null);
 
@@ -45,6 +45,7 @@ export default function LojaSelector({ lojas, value, onChange }) {
               onClick={() => {
                 onChange(l.nome);
                 setAberto(false);
+                onSelected?.(l);
               }}
             >
               {l.nome}

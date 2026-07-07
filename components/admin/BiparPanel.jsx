@@ -13,6 +13,7 @@ const ROTULO_ACAO = {
 export default function BiparPanel({ lojas, onChanged, onError, onSuccess }) {
   const [lojaId, setLojaId] = useState('');
   const [lendo, setLendo] = useState(false);
+  const [statusCamera, setStatusCamera] = useState('');
   const [codigoManual, setCodigoManual] = useState('');
   const [historico, setHistorico] = useState([]);
 
@@ -50,6 +51,7 @@ export default function BiparPanel({ lojas, onChanged, onError, onSuccess }) {
       else if (acao === 'saida') onSuccess(`Saída registrada: ${codigo}`);
       else onError(`Código ${codigo} já estava baixado (devolvido).`);
       registrarHistorico(codigo, acao);
+      setStatusCamera(`Último código lido: ${codigo}`);
       onChanged();
     } catch (e) {
       onError('Erro ao bipar: ' + e.message);
@@ -61,23 +63,49 @@ export default function BiparPanel({ lojas, onChanged, onError, onSuccess }) {
       onError('Selecione a loja antes de bipar.');
       return;
     }
-    setLendo(true);
-    try {
-      const reader = new BrowserMultiFormatReader();
-      const controls = await reader.decodeFromVideoDevice(undefined, videoRef.current, (result) => {
-        if (result) processarCodigo(result.getText());
-      });
-      controlsRef.current = controls;
-    } catch (e) {
-      onError('Não foi possível acessar a câmera: ' + e.message);
-      setLendo(false);
+    if (!navigator.mediaDevices?.getUserMedia) {
+      onError(
+        'Este navegador não tem acesso à câmera aqui. Confirme que o site está em HTTPS (ou localhost) e tente de novo.'
+      );
+      return;
     }
+    setLendo(true);
+    setStatusCamera('Abrindo câmera...');
+    const reader = new BrowserMultiFormatReader();
+
+    // Tenta primeiro forçar a câmera traseira (melhor pra ler pacotes); se o aparelho não tiver
+    // uma câmera traseira "exact" (ex: notebook), cai para uma preferência simples e depois para
+    // qualquer câmera disponível, em vez de simplesmente falhar.
+    const tentativasDeConstraint = [
+      { video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+      { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } },
+      { video: true },
+    ];
+
+    let ultimoErro;
+    for (const constraints of tentativasDeConstraint) {
+      try {
+        const controls = await reader.decodeFromConstraints(constraints, videoRef.current, (result) => {
+          if (result) processarCodigo(result.getText());
+        });
+        controlsRef.current = controls;
+        setStatusCamera('Câmera ativa. Aponte para o QR code ou código de barras.');
+        return;
+      } catch (e) {
+        ultimoErro = e;
+      }
+    }
+
+    onError('Não foi possível acessar a câmera: ' + (ultimoErro?.message || 'erro desconhecido'));
+    setStatusCamera('');
+    setLendo(false);
   }
 
   function pararLeitura() {
     controlsRef.current?.stop();
     controlsRef.current = null;
     setLendo(false);
+    setStatusCamera('');
   }
 
   function handleManualSubmit(e) {
@@ -126,6 +154,7 @@ export default function BiparPanel({ lojas, onChanged, onError, onSuccess }) {
             Parar câmera
           </button>
         )}
+        {statusCamera && <p className="qr-status">{statusCamera}</p>}
       </div>
 
       <div className="section-label">Código manual</div>

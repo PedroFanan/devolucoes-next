@@ -17,12 +17,34 @@ export default function LojasProdutos({ lojas, onChanged, onError, onSuccess }) 
   const [plataforma, setPlataforma] = useState({}); // { [lojaId]: 'TikTok' | ... | 'Outra' }
   const [plataformaOutra, setPlataformaOutra] = useState({}); // { [lojaId]: texto digitado }
 
+  const [lojaRapidaId, setLojaRapidaId] = useState('');
+  const [produtoRapidoNome, setProdutoRapidoNome] = useState('');
+  const [plataformaRapida, setPlataformaRapida] = useState(PLATAFORMAS[0]);
+  const [plataformaRapidaOutra, setPlataformaRapidaOutra] = useState('');
+
   async function handleAddLoja() {
     if (!novaLoja.trim()) return;
     try {
-      await adicionarLoja(novaLoja.trim());
+      const nova = await adicionarLoja(novaLoja.trim());
       setNovaLoja('');
       onSuccess('Loja adicionada.');
+      onChanged();
+      if (nova?.id) setLojaRapidaId(nova.id);
+    } catch (e) {
+      onError('Erro: ' + e.message);
+    }
+  }
+
+  async function handleAddProdutoRapido() {
+    const nome = produtoRapidoNome.trim();
+    if (!lojaRapidaId || !nome) return;
+    const plataformaFinal =
+      plataformaRapida === 'Outra' ? plataformaRapidaOutra.trim() || 'Outra' : plataformaRapida;
+    try {
+      await adicionarProduto(lojaRapidaId, nome, plataformaFinal);
+      setProdutoRapidoNome('');
+      setPlataformaRapidaOutra('');
+      onSuccess('Produto adicionado.');
       onChanged();
     } catch (e) {
       onError('Erro: ' + e.message);
@@ -103,6 +125,45 @@ export default function LojasProdutos({ lojas, onChanged, onError, onSuccess }) 
           placeholder="Nome da loja"
         />
         <button className="btn small" onClick={handleAddLoja}>
+          Adicionar
+        </button>
+      </div>
+
+      <div className="section-label">Adicionar produto</div>
+      <p className="subtitle" style={{ margin: '0 0 12px', fontSize: 12.5 }}>
+        Escolha a loja direto aqui, sem precisar rolar a lista abaixo.
+      </p>
+      <div className="add-inline">
+        <select value={lojaRapidaId} onChange={(e) => setLojaRapidaId(e.target.value)}>
+          <option value="">Selecione a loja</option>
+          {lojas.map((l) => (
+            <option key={l.id} value={l.id}>
+              {l.nome}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          placeholder="Nome do produto"
+          value={produtoRapidoNome}
+          onChange={(e) => setProdutoRapidoNome(e.target.value)}
+        />
+        <select value={plataformaRapida} onChange={(e) => setPlataformaRapida(e.target.value)}>
+          {PLATAFORMAS.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
+        {plataformaRapida === 'Outra' && (
+          <input
+            type="text"
+            placeholder="Qual plataforma?"
+            value={plataformaRapidaOutra}
+            onChange={(e) => setPlataformaRapidaOutra(e.target.value)}
+          />
+        )}
+        <button className="btn small" onClick={handleAddProdutoRapido}>
           Adicionar
         </button>
       </div>
